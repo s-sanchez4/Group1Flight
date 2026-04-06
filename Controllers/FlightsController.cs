@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Group1Flight.Models; // Or wherever your Flight model is
+using Group1Flight.Models; 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Group1Flight.Controllers
 {
     public class FlightsController : Controller
     {
-        // This is the "_context" I was referring to. 
-        // It's a private variable that holds your database connection.
+        
         private readonly FlightContext _context;
 
         // The "Constructor": This is where the app 'injects' the database 

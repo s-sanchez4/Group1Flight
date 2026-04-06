@@ -3,17 +3,17 @@ using Group1Flight.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add Session Services
+
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(30); 
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
-// NEW: Requirement #5 - Required for the CartWrapper to access Cookies
+
 builder.Services.AddHttpContextAccessor();
 
-// 2. Add Database Context
+
 builder.Services.AddDbContext<FlightContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("FlightContext") ?? "Data Source=Flight.sqlite"));
 
@@ -21,7 +21,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 3. MIDDLEWARE ORDER (CRITICAL)
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
