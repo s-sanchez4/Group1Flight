@@ -1,0 +1,83 @@
+@model Group1Flight.Models.Flight
+
+@{
+    ViewData["Title"] = "Flight Details";
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Flight Details: @Model.FlightCode</h2>
+            @if (Model.Airline != null)
+            {
+                <img src="~/images/@Model.Airline.ImageName" alt="@Model.Airline.Name" style="height: 40px;" />
+            }
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>From:</strong> @Model.From</li>
+                        <li class="list-group-item"><strong>To:</strong> @Model.To</li>
+                        <li class="list-group-item"><strong>Date:</strong> @Model.Date.ToLongDateString()</li>
+                        <li class="list-group-item"><strong>Departs:</strong> @Model.DepartureTime.ToString(@"hh\:mm")</li>
+                        <li class="list-group-item"><strong>Arrives:</strong> @Model.ArrivalTime.ToString(@"hh\:mm")</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Aircraft:</strong> @Model.AircraftType</li>
+                        <li class="list-group-item"><strong>Cabin:</strong> @Model.CabinType</li>
+                        <li class="list-group-item"><strong>Emissions:</strong> @Model.Emission kg CO2</li>
+                        <li class="list-group-item"><strong>Price:</strong> <span class="text-success fw-bold">$@Model.Price</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <a asp-action="Index" 
+                   asp-route-fromCity="@ViewBag.FromCity" 
+                   asp-route-toCity="@ViewBag.ToCity" 
+                   asp-route-departureDate="@ViewBag.DepartureDate" 
+                   asp-route-cabinType="@ViewBag.CabinType" 
+                   class="btn btn-outline-secondary">
+                   <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
+
+                <form asp-action="Select" asp-controller="Flights" method="post">
+                    <input type="hidden" name="id" value="@Model.FlightId" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Select Flight
+                    </button>
+                </form>
+            </div>
+            
+            @if (Context.Request.Query["status"] == "success")
+            {
+                <div id="confirmationMessage" class="alert alert-success mt-3 shadow-sm">
+                    <i class="bi bi-check2-all"></i> Flight Selected! Your choice has been added to your selections.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Check if the confirmation message exists
+        const flashMessage = document.getElementById('confirmationMessage');
+        
+        if (flashMessage) {
+            // 1. Wait 3 seconds
+            setTimeout(function () {
+                // 2. Start fading out (CSS transition)
+                flashMessage.style.transition = "opacity 1s ease";
+                flashMessage.style.opacity = "0";
+                
+                // 3. Remove from the layout entirely after fade finishes
+                setTimeout(function () {
+                    flashMessage.remove();
+                }, 1000);
+            }, 3000);
+        }
+    </script>
+}

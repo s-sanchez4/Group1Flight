@@ -1,0 +1,73 @@
+@model IEnumerable<Group1Flight.Models.Flight>
+
+<div class="container mt-4">
+    <h2>Your Selected Flights</h2>
+    <hr />
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">You haven't selected any flights yet.</div>
+    }
+    else
+    {
+        <table class="table table-hover shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Flight</th>
+                    <th>Route</th>
+                    <th>Departure</th>
+                    <th>Price</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var flight in Model)
+                {
+                    // PRO-TIP CHECK: Ensure the flight still exists in the database
+                    if (flight != null)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@flight.FlightCode</strong><br />
+                                <small class="text-muted">@flight.Airline?.Name</small>
+                            </td>
+                            <td>@flight.From <i class="bi bi-arrow-right"></i> @flight.To</td>
+                            <td>@flight.Date.ToShortDateString() at @flight.DepartureTime.ToString(@"hh\:mm")</td>
+                            <td class="text-success fw-bold">$@flight.Price</td>
+                            <td class="text-center">
+                                <form asp-action="RemoveSelection" asp-route-id="@flight.FlightId" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Cancel
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="table-warning">
+                            <td colspan="4"><em>A previously selected flight is no longer available.</em></td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary text-white">Unavailable</span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between mt-4">
+            <form asp-action="ClearSelections" method="post">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to clear all selections?');">
+                    <i class="bi bi-x-circle"></i> Clear All Selections
+                </button>
+            </form>
+            
+            <a asp-action="Index" 
+               asp-route-fromCity="@Context.Session.GetString("LastFromCity")" 
+               class="btn btn-primary">
+                <i class="bi bi-search"></i> Return to Search
+            </a>
+        </div>
+    }
+</div>

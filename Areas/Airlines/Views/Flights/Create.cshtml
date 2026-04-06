@@ -1,0 +1,113 @@
+@model Group1Flight.Models.FlightViewModel
+
+@{
+    ViewData["Title"] = "Add New Flight";
+    ViewData["BodyClass"] = "airlines-bg";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Register New Flight</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.FlightCode" class="form-label fw-bold">Flight Number</label>
+                                <input asp-for="Flight.FlightCode" class="form-control" placeholder="e.g. AA123" />
+                                <span asp-validation-for="Flight.FlightCode" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.AirlineId" class="form-label fw-bold">Operating Airline</label>
+                                <select asp-for="Flight.AirlineId" class="form-select" asp-items="Model.AirlineList">
+                                    <option value="">-- Select Airline --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.From" class="form-label fw-bold">Origin City</label>
+                                <input asp-for="Flight.From" class="form-control" />
+                                <span asp-validation-for="Flight.From" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.To" class="form-label fw-bold">Destination City</label>
+                                <input asp-for="Flight.To" class="form-control" />
+                                <span asp-validation-for="Flight.To" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Flight.Date" class="form-label fw-bold">Date</label>
+                                <input asp-for="Flight.Date" type="date" class="form-control" />
+                                <span asp-validation-for="Flight.Date" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Flight.DepartureTime" class="form-label fw-bold">Departure</label>
+                                <input asp-for="Flight.DepartureTime" type="time" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Flight.ArrivalTime" class="form-label fw-bold">Arrival</label>
+                                <input asp-for="Flight.ArrivalTime" type="time" class="form-control" />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.AircraftType" class="form-label fw-bold">Aircraft Type</label>
+                                <select asp-for="Flight.AircraftType" class="form-select">
+                                    <option value="">-- Choose Aircraft --</option>
+                                    @foreach (var type in FlightViewModel.AircraftTypes)
+                                    {
+                                        <option value="@type">@type</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.CabinType" class="form-label fw-bold">Cabin Class</label>
+                                <select asp-for="Flight.CabinType" class="form-select">
+                                    @foreach (var cabin in FlightViewModel.CabinTypes)
+                                    {
+                                        <option value="@cabin">@cabin</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.Price" class="form-label fw-bold">Ticket Price ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Flight.Price" class="form-control" type="number" step="0.01" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Flight.Emission" class="form-label fw-bold">CO2 Emission (kg)</label>
+                                <input asp-for="Flight.Emission" class="form-control" type="number" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success px-5 shadow-sm">Save Flight</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,137 @@
+﻿@model IEnumerable<Group1Flight.Models.Flight>
+
+@{
+    ViewData["Title"] = "Available Flights";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Welcome to Group1Flight</h1>
+    <p class="lead">View and search for available flights worldwide.</p>
+</div>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-filter"></i> Filter Flights</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">From</label>
+                            <select name="fromCity" class="form-select" asp-items="ViewBag.FromCities">
+                                <option value="">Anywhere</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">To</label>
+                            <select name="toCity" class="form-select" asp-items="ViewBag.ToCities">
+                                <option value="">Anywhere</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Departure Date</label>
+                            <input type="date" name="departureDate" class="form-control" 
+                                   value="@Context.Request.Query["departureDate"]" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Cabin Type</label>
+                            <select name="cabinType" class="form-select">
+                                <option value="All">All</option>
+                                <option value="Basic Economy">Basic Economy</option>
+                                <option value="Economy">Economy</option>
+                                <option value="Economy Plus">Economy Plus</option>
+                                <option value="Business">Business</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 shadow-sm">Search Flights</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2 btn-sm">Reset Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h3 class="mb-4">Results</h3>
+            
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var flight in Model)
+                {
+                    <div class="card mb-3 shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="row align-items-center text-center">
+                                
+                                <div class="col-md-2 border-end">
+                                    @if (flight.Airline != null && !string.IsNullOrEmpty(flight.Airline.ImageName))
+                                    {
+                                        <img src="~/images/@flight.Airline.ImageName" 
+                                             alt="@flight.Airline.Name" 
+                                             style="max-height: 50px; max-width: 100%;" 
+                                             class="img-fluid mb-2" />
+                                        <div class="small fw-bold">@flight.Airline.Name</div>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-airplane-engines fs-1 text-secondary"></i>
+                                        <div class="text-muted small">@flight.FlightCode</div>
+                                    }
+                                    <div class="badge bg-light text-dark mt-1">@flight.AircraftType</div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="h5 mb-0">@flight.DepartureTime.ToString(@"hh\:mm")</div>
+                                    <div class="text-muted fw-bold">@flight.From</div>
+                                    <div class="small text-muted">@flight.Date.ToShortDateString()</div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="text-muted border-bottom mb-1 small">Duration</div>
+                                    <div class="fw-bold">
+                                        @((flight.ArrivalTime - flight.DepartureTime).TotalHours >= 0 
+                                            ? (flight.ArrivalTime - flight.DepartureTime).ToString(@"h\h\ m\m") 
+                                            : "N/A")
+                                    </div>
+                                    <i class="bi bi-arrow-right text-primary"></i>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="h5 mb-0">@flight.ArrivalTime.ToString(@"hh\:mm")</div>
+                                    <div class="text-muted fw-bold">@flight.To</div>
+                                    <div class="small text-muted">@flight.CabinType</div>
+                                </div>
+
+                                <div class="col-md-2 text-end">
+                                    <div class="text-success h4 mb-0">$@flight.Price</div>
+                                    <div class="text-muted small mb-2">@flight.Emission kg CO2</div>
+                                    
+                                    <a asp-action="Details" 
+                                       asp-route-id="@flight.FlightId" 
+                                       asp-route-fromCity="@Context.Request.Query["fromCity"]"
+                                       asp-route-toCity="@Context.Request.Query["toCity"]"
+                                       asp-route-departureDate="@Context.Request.Query["departureDate"]"
+                                       asp-route-cabinType="@Context.Request.Query["cabinType"]"
+                                       class="btn btn-primary btn-sm w-100 shadow-sm">
+                                        View Details
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning shadow-sm">
+                    <i class="bi bi-exclamation-triangle"></i> No flights found for your criteria. Try adjusting your filters.
+                </div>
+            }
+        </div>
+    </div>
+</div>
