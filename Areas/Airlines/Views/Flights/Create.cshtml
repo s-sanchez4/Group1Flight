@@ -27,6 +27,7 @@
                                 <select asp-for="Flight.AirlineId" class="form-select" asp-items="Model.AirlineList">
                                     <option value="">-- Select Airline --</option>
                                 </select>
+                                <span asp-validation-for="Flight.AirlineId" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -46,17 +47,19 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Flight.Date" class="form-label fw-bold">Date</label>
-                                <input asp-for="Flight.Date" type="date" class="form-control" />
+                                <input asp-for="Flight.Date" type="date" class="form-control" 
+                                data-val="true" 
+                                data-val-futuredate="Flights cannot be scheduled in the past." />
                                 <span asp-validation-for="Flight.Date" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Flight.DepartureTime" class="form-label fw-bold">Departure</label>
                                 <input asp-for="Flight.DepartureTime" type="time" class="form-control" />
-                            </div>
+                                <span asp-validation-for="Flight.DepartureTime" class="text-danger"></span> </div>
                             <div class="col-md-4 mb-3">
                                 <label asp-for="Flight.ArrivalTime" class="form-label fw-bold">Arrival</label>
                                 <input asp-for="Flight.ArrivalTime" type="time" class="form-control" />
-                            </div>
+                                <span asp-validation-for="Flight.ArrivalTime" class="text-danger"></span> </div>
                         </div>
 
                         <hr />
@@ -64,22 +67,16 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Flight.AircraftType" class="form-label fw-bold">Aircraft Type</label>
-                                <select asp-for="Flight.AircraftType" class="form-select">
+                                <select asp-for="Flight.AircraftType" class="form-select" asp-items="@(new SelectList(FlightViewModel.AircraftTypes))">
                                     <option value="">-- Choose Aircraft --</option>
-                                    @foreach (var type in FlightViewModel.AircraftTypes)
-                                    {
-                                        <option value="@type">@type</option>
-                                    }
                                 </select>
+                                <span asp-validation-for="Flight.AircraftType" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Flight.CabinType" class="form-label fw-bold">Cabin Class</label>
-                                <select asp-for="Flight.CabinType" class="form-select">
-                                    @foreach (var cabin in FlightViewModel.CabinTypes)
-                                    {
-                                        <option value="@cabin">@cabin</option>
-                                    }
+                                <select asp-for="Flight.CabinType" class="form-select" asp-items="@(new SelectList(FlightViewModel.CabinTypes))">
                                 </select>
+                                <span asp-validation-for="Flight.CabinType" class="text-danger"></span>
                             </div>
                         </div>
 
@@ -90,11 +87,11 @@
                                     <span class="input-group-text">$</span>
                                     <input asp-for="Flight.Price" class="form-control" type="number" step="0.01" />
                                 </div>
-                            </div>
+                                <span asp-validation-for="Flight.Price" class="text-danger"></span> </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Flight.Emission" class="form-label fw-bold">CO2 Emission (kg)</label>
                                 <input asp-for="Flight.Emission" class="form-control" type="number" />
-                            </div>
+                                <span asp-validation-for="Flight.Emission" class="text-danger"></span> </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
@@ -110,4 +107,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+            <script src="~/js/custom-validation.js"></script>
 }

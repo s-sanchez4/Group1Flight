@@ -21,7 +21,8 @@
                         This action cannot be undone and will remove the flight from all client searches.
                     </div>
 
-                    <form asp-action="Delete" method="post">
+                    <form asp-area="Airlines" asp-controller="Flights" asp-action="Delete" asp-route-id="@Model.FlightId" method="post">
+    <input type="hidden" asp-for="FlightId" />
                         <input type="hidden" asp-for="FlightId" />
                         <div class="d-grid gap-2 d-md-block">
                             <a asp-action="Index" class="btn btn-secondary">No, Keep It</a>

@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Group1Flight.Models
+namespace Group1Flight.Extensions
 {
     public static class SessionExtensions
     {

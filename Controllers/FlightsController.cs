@@ -114,7 +114,7 @@ public IActionResult Select(int id)
     Response.Cookies.Append(cookieName, string.Join(",", selectedIds), options);
 
     // 4. Redirect back to Details or go to Selections
-    return RedirectToAction("Details", new { id = id, status = "success" });
+   return RedirectToAction("Details", "Home", new { id = id, status = "success" });
 }
 // GET: Flights/Selections
 public async Task<IActionResult> Selections()
@@ -122,16 +122,21 @@ public async Task<IActionResult> Selections()
     string? existingCookie = Request.Cookies["SelectedFlights"];
     if (string.IsNullOrEmpty(existingCookie))
     {
+        // Make sure you have a Selections.cshtml in Views/Flights/
         return View(new List<Flight>());
     }
 
-    var selectedIds = existingCookie.Split(',').Select(int.Parse).ToList();
+    var selectedIds = existingCookie.Split(',')
+                                   .Where(s => !string.IsNullOrEmpty(s)) // Safety check
+                                   .Select(int.Parse)
+                                   .ToList();
+
     var flights = await _context.Flights
         .Include(f => f.Airline)
         .Where(f => selectedIds.Contains(f.FlightId))
         .ToListAsync();
 
-    return View(flights);
+    return View(flights); // This looks for Views/Flights/Selections.cshtml
 }
 
 // POST: Flights/ClearSelections

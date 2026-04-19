@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group1Flight.Models;
+using Group1Flight.Extensions;
 
 namespace Group1Flight.Areas.Airlines.Controllers
 {
     [Area("Airlines")]
-    public class Flights : Controller
+    [Route("Airlines/[controller]/[action]")]
+    public class FlightsController : Controller
     {
         private readonly FlightContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public Flights(FlightContext context, IHttpContextAccessor httpContextAccessor)
+        public FlightsController(FlightContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -21,10 +23,26 @@ namespace Group1Flight.Areas.Airlines.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["BodyClass"] = "airlines-bg";
-            var flights = await _context.Flights.Include(f => f.Airline).ToListAsync();
+            var sessionFilter = HttpContext.Session.GetObject<FlightViewModel>("UserFilter");
+            var flightsQuery = _context.Flights.Include(f => f.Airline).AsQueryable();
+
+            if (sessionFilter?.Flight != null)
+            {
+                if (!string.IsNullOrEmpty(sessionFilter.Flight.From))
+                    flightsQuery = flightsQuery.Where(f => f.From == sessionFilter.Flight.From);
+
+                if (!string.IsNullOrEmpty(sessionFilter.Flight.To))
+                    flightsQuery = flightsQuery.Where(f => f.To == sessionFilter.Flight.To);
+
+                if (sessionFilter.Flight.AirlineId != 0)
+                    flightsQuery = flightsQuery.Where(f => f.AirlineId == sessionFilter.Flight.AirlineId);
+            }
+
+            var flights = await flightsQuery.ToListAsync();
             return View(flights);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             ViewData["BodyClass"] = "airlines-bg";
@@ -43,19 +61,46 @@ namespace Group1Flight.Areas.Airlines.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(FlightViewModel viewModel)
         {
+            // 1. Prepare clean data for comparison
+            var newCode = viewModel.Flight.FlightCode?.Trim().ToUpper() ?? "";
+            var newDate = viewModel.Flight.Date.Date;
+
+            // 2. THE STRENGTHENED CHECK (Explicit comparison for Year/Month/Day)
+            bool isDuplicate = await _context.Flights.AnyAsync(f => 
+                f.FlightCode.ToUpper() == newCode && 
+                f.Date.Year == newDate.Year &&
+                f.Date.Month == newDate.Month &&
+                f.Date.Day == newDate.Day);
+
+            if (isDuplicate)
+            {
+                // Adding this error forces ModelState.IsValid to be false
+                ModelState.AddModelError("Flight.FlightCode", "STOP: This flight code is already scheduled for this date.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(viewModel.Flight);
                 await _context.SaveChangesAsync();
+                
                 TempData["Message"] = $"Success: Flight {viewModel.Flight.FlightCode} added.";
                 TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
-            viewModel.AirlineList = _context.Airlines.Select(a => new SelectListItem { Text = a.Name, Value = a.AirlineId.ToString() });
+
+            // 3. RE-POPULATE list and return view if validation failed
+            viewModel.AirlineList = _context.Airlines.Select(a => new SelectListItem 
+            { 
+                Text = a.Name, 
+                Value = a.AirlineId.ToString() 
+            });
+
+            ViewData["BodyClass"] = "airlines-bg";
             return View(viewModel);
         }
 
-        // --- 1. THE MISSING GET METHOD (To load the Edit page) ---
+        [HttpGet]
+        [Route("{id?}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -76,35 +121,39 @@ namespace Group1Flight.Areas.Airlines.Controllers
             return View(viewModel);
         }
 
-        // --- 2. THE CORRECTED POST METHOD (To save and redirect) ---
         [HttpPost]
+        [Route("{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, FlightViewModel viewModel)
         {
             if (id != viewModel.Flight.FlightId) return NotFound();
 
+            // Optional: You can also add the duplicate check here for Edits!
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(viewModel.Flight);
                     await _context.SaveChangesAsync();
-
-                    TempData["Message"] = $"Success: Flight {viewModel.Flight.FlightCode} updated.";
-                    TempData["MessageType"] = "success";
                     
-                    // THIS IS WHAT TAKES YOU BACK TO DASHBOARD
+                    TempData["Message"] = "Flight updated successfully!";
+                    TempData["MessageType"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Flights.Any(e => e.FlightId == viewModel.Flight.FlightId)) return NotFound();
+                    if (!_context.Flights.Any(e => e.FlightId == id)) return NotFound();
                     else throw;
                 }
             }
 
-            // If validation fails, reload dropdowns and stay on page
-            viewModel.AirlineList = _context.Airlines.Select(a => new SelectListItem { Text = a.Name, Value = a.AirlineId.ToString() });
+            viewModel.AirlineList = _context.Airlines.Select(a => new SelectListItem
+            {
+                Text = a.Name,
+                Value = a.AirlineId.ToString()
+            });
+
+            ViewData["BodyClass"] = "airlines-bg";
             return View(viewModel);
         }
 
@@ -130,7 +179,5 @@ namespace Group1Flight.Areas.Airlines.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-        
     }
 }

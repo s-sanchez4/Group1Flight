@@ -24,9 +24,9 @@
                         <h5 class="card-title mb-1">Flight Inventory</h5>
                         <p class="card-text text-muted mb-0">Total Flights Registered: @Model?.Count()</p>
                     </div>
-                    <a asp-action="Create" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Add New Flight
-                    </a>
+                   <a asp-area="Airlines" asp-controller="Flights" asp-action="Create" class="btn btn-primary">
+    Add New Flight
+</a>
                 </div>
             </div>
         </div>
@@ -74,8 +74,9 @@
                                     <td class="text-success fw-bold">$@item.Price</td>
                                     <td class="text-center">
                                         <div class="btn-group shadow-sm">
-                                            <a asp-action="Edit" asp-route-id="@item.FlightId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <a asp-action="Delete" asp-route-id="@item.FlightId" class="btn btn-sm btn-outline-danger">Delete</a>
+                                            <a asp-area="Airlines" 
+   asp-controller="Flights"a asp-action="Edit" asp-route-id="@item.FlightId" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a asp-area="Airlines" asp-controller="Flights" asp-action="Delete" asp-route-id="@item.FlightId" class="btn btn-sm btn-outline-danger">Delete</a>
                                         </div>
                                     </td>
                                 </tr>
