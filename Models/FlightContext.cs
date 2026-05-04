@@ -14,7 +14,7 @@ namespace Group1Flight.Models
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
-    // ... your existing Flight seed data ...
+    
 
     modelBuilder.Entity<Airline>().HasData(
         new Airline { AirlineId = 1, Name = "American Airlines", ImageName = "aa_logo.png" },
@@ -23,7 +23,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         new Airline { AirlineId = 4, Name = "Japan Airlines", ImageName = "jal_logo.png" },
         new Airline { AirlineId = 5, Name = "Air France", ImageName = "af_logo.png" }
     );
-            // Seed Data for Flights
+            
            modelBuilder.Entity<Flight>().HasData(
     new Flight { 
         FlightId = 1, 

@@ -61,11 +61,11 @@ namespace Group1Flight.Areas.Airlines.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(FlightViewModel viewModel)
         {
-            // 1. Prepare clean data for comparison
+            
             var newCode = viewModel.Flight.FlightCode?.Trim().ToUpper() ?? "";
             var newDate = viewModel.Flight.Date.Date;
 
-            // 2. THE STRENGTHENED CHECK (Explicit comparison for Year/Month/Day)
+            
             bool isDuplicate = await _context.Flights.AnyAsync(f => 
                 f.FlightCode.ToUpper() == newCode && 
                 f.Date.Year == newDate.Year &&
@@ -74,7 +74,7 @@ namespace Group1Flight.Areas.Airlines.Controllers
 
             if (isDuplicate)
             {
-                // Adding this error forces ModelState.IsValid to be false
+                
                 ModelState.AddModelError("Flight.FlightCode", "STOP: This flight code is already scheduled for this date.");
             }
 
@@ -88,7 +88,7 @@ namespace Group1Flight.Areas.Airlines.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // 3. RE-POPULATE list and return view if validation failed
+            
             viewModel.AirlineList = _context.Airlines.Select(a => new SelectListItem 
             { 
                 Text = a.Name, 
@@ -128,7 +128,7 @@ namespace Group1Flight.Areas.Airlines.Controllers
         {
             if (id != viewModel.Flight.FlightId) return NotFound();
 
-            // Optional: You can also add the duplicate check here for Edits!
+            
             if (ModelState.IsValid)
             {
                 try

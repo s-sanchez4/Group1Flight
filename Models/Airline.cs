@@ -14,7 +14,6 @@ namespace Group1Flight.Models
         [Display(Name = "Logo Image")]
         public string? ImageName { get; set; }
 
-        // Navigation property to link back to Flights if needed
-        public virtual ICollection<Flight>? Flights { get; set; }
+                public virtual ICollection<Flight>? Flights { get; set; }
     }
 }

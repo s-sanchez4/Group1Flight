@@ -1,22 +1,26 @@
-// 1. Define the logic
-$.validator.addMethod("futuredate", function (value, element) {
-    if (!value) return true;
+// 1. Define the logic with the maxYears parameter
+$.validator.addMethod("futuredate", function (value, element, params) {
+    if (!value) return true; 
+
     var inputDate = new Date(value);
     var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return inputDate >= today;
+    
+    // Get the max years from the HTML attribute injected by IClientModelValidator
+    var maxYears = $(element).attr("data-val-futuredate-maxyears") || 3;
+    
+    var maxDate = new Date();
+    maxDate.setFullYear(today.getFullYear() + parseInt(maxYears));
+    
+    // Check if it's in the future AND not beyond the max limit
+    return inputDate >= today.setHours(0,0,0,0) && inputDate <= maxDate;
 });
 
-// 2. Add the adapter
-$.validator.unobtrusive.adapters.add("futuredate", [], function (options) {
-    options.rules["futuredate"] = true;
-    options.messages["futuredate"] = options.message;
-});
+// 2. Add the adapter (simpler version)
+$.validator.unobtrusive.adapters.addBool("futuredate");
 
-// 3. FORCE immediate validation on change/blur
+// 3. FORCE immediate validation (Keep your existing logic)
 $(document).ready(function () {
-    // This targets the specific input by its data attribute
     $(document).on("blur change", 'input[data-val-futuredate]', function () {
-        $(this).valid(); // This forces the red error to toggle immediately
+        $(this).valid(); 
     });
 });

@@ -10,7 +10,7 @@ namespace Group1Flight.Models
             _accessor = accessor;
         }
 
-        // Mechanical logic to get IDs from the cookie
+        
         public List<int> GetSelectedIds()
         {
             var cookie = _accessor.HttpContext?.Request.Cookies[CookieName];
@@ -22,7 +22,7 @@ namespace Group1Flight.Models
                          .ToList();
         }
 
-        // Logic to add to cookie (The 14-day rule)
+       
         public void AddToCart(int id)
         {
             var ids = GetSelectedIds();
