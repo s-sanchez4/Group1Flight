@@ -1,10 +1,10 @@
-@model Group1Flight.Models.FlightViewModel
+@model FlightViewModel
+@using Group1Flight.Models.ViewModels
 
 @{
     ViewData["Title"] = "Edit Flight";
     ViewData["BodyClass"] = "airlines-bg";
 }
-
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -70,21 +70,21 @@
                         <hr />
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Flight.AircraftType" class="form-label fw-bold">Aircraft Type</label>
-                                <select asp-for="Flight.AircraftType" class="form-select" 
-                                        asp-items="@(new SelectList(Group1Flight.Models.FlightViewModel.AircraftTypes))">
-                                </select>
-                                <span asp-validation-for="Flight.AircraftType" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Flight.CabinType" class="form-label fw-bold">Cabin Class</label>
-                                <select asp-for="Flight.CabinType" class="form-select" 
-                                        asp-items="@(new SelectList(Group1Flight.Models.FlightViewModel.CabinTypes))">
-                                </select>
-                                <span asp-validation-for="Flight.CabinType" class="text-danger"></span>
-                            </div>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Flight.AircraftType" class="form-label fw-bold">Aircraft Type</label>
+                                        <select asp-for="Flight.AircraftType" class="form-select" 
+                                                asp-items="@(new SelectList(FlightViewModel.AircraftTypes))">
+                                        </select>
+                                        <span asp-validation-for="Flight.AircraftType" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Flight.CabinType" class="form-label fw-bold">Cabin Class</label>
+                                        <select asp-for="Flight.CabinType" class="form-select" 
+                                                asp-items="@(new SelectList(FlightViewModel.CabinTypes))">
+                                        </select>
+                                        <span asp-validation-for="Flight.CabinType" class="text-danger"></span>
+                                    </div>
+                                </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">

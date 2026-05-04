@@ -1,7 +1,8 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;     
+using Group1Flight.Models.ViewModels;        
+using Group1Flight.Models.ExtensionMethods;  
 using Group1Flight.Models;
-using Group1Flight.Extensions;
 
 namespace Group1Flight.Areas.Admin.Controllers
 {
@@ -10,8 +11,9 @@ namespace Group1Flight.Areas.Admin.Controllers
     {
         public IActionResult Index()
         {
-            
             ViewData["BodyClass"] = "admin-bg"; 
+            
+            
             var sessionFilter = HttpContext.Session.GetObject<FlightViewModel>("UserFilter");
             return View();
         }

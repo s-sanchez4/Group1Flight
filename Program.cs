@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Group1Flight.Models;
+using Group1Flight.Models.DataLayer.Repositories;
+using Group1Flight.Models.DataLayer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
     options.Cookie.Path = "/";
 });
+builder.Services.AddScoped<FlightContext>(); // Already there likely
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // --- 2. BUILD (Only once!) ---
 var app = builder.Build();

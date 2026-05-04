@@ -1,7 +1,14 @@
-@model IEnumerable<Group1Flight.Models.Flight>
+@model IEnumerable<Flight>
+@using Group1Flight
+@using Group1Flight.Models
+@using Group1Flight.Models.DomainModels
+@using Group1Flight.Models.ViewModels
+@using Group1Flight.Models.DataLayer
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <div class="container mt-4">
     <h2>Your Selected Flights</h2>
+    ...
     <hr />
 
     @if (Model == null || !Model.Any())
@@ -23,7 +30,7 @@
             <tbody>
                 @foreach (var flight in Model)
                 {
-                    // PRO-TIP CHECK: Ensure the flight still exists in the database
+                    
                     if (flight != null)
                     {
                         <tr>
@@ -35,6 +42,23 @@
                             <td>@flight.Date.ToShortDateString() at @flight.DepartureTime.ToString(@"hh\:mm")</td>
                             <td class="text-success fw-bold">$@flight.Price</td>
                             <td class="text-center">
+                                <td class="text-center">
+                                    @if (flight.IsReserved)
+                                    {
+                                        @*  *@
+                                        <span class="badge bg-success mb-1 d-block">
+                                            <i class="bi bi-check-circle"></i> Reserved
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @*  *@
+                                        <form asp-action="Reserve" asp-route-id="@flight.FlightId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-calendar-check"></i> Reserve
+                                            </button>
+                                        </form>
+                                    }
                                 <form asp-action="RemoveSelection" asp-route-id="@flight.FlightId" method="post" style="display:inline;">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-trash"></i> Cancel

@@ -1,12 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Group1Flight.Models.DomainModels;
+using Group1Flight.Models.DataLayer.Repositories;
+using Group1Flight.Models.ViewModels;
+using Group1Flight.Models.Validation;
 
 
-namespace Group1Flight.Models
+namespace Group1Flight.Models.DomainModels
 {
     public class Flight
     {
         public int FlightId { get; set; }
+        public bool IsReserved { get; set; } = false; // Phase 4 requirement
 
        [Required]
                 [RegularExpression(@"^[a-zA-Z]{2}\d{1,4}$", ErrorMessage = "Flight Code must start with 2 letters followed by 1-4 digits.")]

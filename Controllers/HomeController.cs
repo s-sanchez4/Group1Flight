@@ -1,31 +1,40 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering; // Fixes 'SelectList' error
-using Microsoft.EntityFrameworkCore;      // Fixes '.Include' error
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Group1Flight.Models.DomainModels;
+using Group1Flight.Models.ViewModels;
+using Group1Flight.Models.DataLayer.Repositories; 
+// Update this if your session extensions are in a subfolder
+using Group1Flight.Models.ExtensionMethods; 
 using Group1Flight.Models;
-using Group1Flight.Extensions;           // Fixes 'SetObject/GetObject' error
 
 namespace Group1Flight.Controllers
 {
     public class HomeController : Controller
     {
-        // 1. ADD THIS: This allows the controller to talk to your database
-        private readonly FlightContext _context;
+        // Use the Repository interface instead of FlightContext
+        private IRepository<Flight> flightData { get; set; }
 
-        public HomeController(FlightContext context)
+        public HomeController(IRepository<Flight> flightRep)
         {
-            _context = context;
+            flightData = flightRep;
         }
 
         // GET: Home/Index
         public IActionResult Index()
         {
-            // READ from Session
+            // Use the updated namespace for Session Extensions
             var sessionModel = HttpContext.Session.GetObject<FlightViewModel>("UserFilter") ?? new FlightViewModel();
 
-            // 2. FIX: Use _context (the private variable) instead of the Class name
-            var flights = _context.Flights.Include(f => f.Airline).AsQueryable();
+            // Set up QueryOptions for Eager Loading the Airline
+            var options = new QueryOptions<Flight> {
+                Includes = new[] { "Airline" }
+            };
 
+            // Retrieve flights through the repository
+            var flights = flightData.List(options);
+
+            // Apply filtering logic if session data exists
             if (sessionModel.Flight != null)
             {
                 if (!string.IsNullOrEmpty(sessionModel.Flight.From))
@@ -37,11 +46,12 @@ namespace Group1Flight.Controllers
 
             ViewBag.Flights = flights.ToList();
 
-            // 3. FIX: _context is now recognized here
-            ViewBag.FromCities = new SelectList(_context.Flights.Select(f => f.From).Distinct());
-            ViewBag.ToCities = new SelectList(_context.Flights.Select(f => f.To).Distinct());
+            // Populate dropdowns using the Repository
+            ViewBag.FromCities = new SelectList(flightData.List(new QueryOptions<Flight>())
+                .Select(f => f.From).Distinct());
+            ViewBag.ToCities = new SelectList(flightData.List(new QueryOptions<Flight>())
+                .Select(f => f.To).Distinct());
 
-            // The "~" starts at the root of your project
             return View("~/Views/Home/Index.cshtml", sessionModel);
         }
 
@@ -49,22 +59,22 @@ namespace Group1Flight.Controllers
         public IActionResult Index(FlightViewModel model)
         {
             HttpContext.Session.SetObject("UserFilter", model);
-            
-            // Note: If you want them to stay on the home page to see results:
-            // return RedirectToAction("Index");
-            
             return RedirectToAction("Index");
         }
 
         public IActionResult Privacy() => View("Privacy");
         public IActionResult Admin() => View("Admin");
         public IActionResult Airlines() => View("Airlines");
+
         public IActionResult Details(int id)
         {
-            // Find the specific flight and include the Airline info for the logo
-            var flight = _context.Flights
-                .Include(f => f.Airline)
-                .FirstOrDefault(f => f.FlightId == id);
+            // Use QueryOptions to find a specific flight with its Airline
+            var options = new QueryOptions<Flight> {
+                Includes = new[] { "Airline" },
+                Where = f => f.FlightId == id
+            };
+
+            var flight = flightData.Get(options);
 
             if (flight == null)
             {
@@ -77,6 +87,7 @@ namespace Group1Flight.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            // Note: Ensure ErrorViewModel is correctly namespaced in Models
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     } 

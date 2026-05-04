@@ -70,14 +70,13 @@
             &copy; 2026 - Group1Flight - <a asp-area="" asp-controller="Flights" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+<!-- 1. Load Core Libraries First -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
-   @section Scripts {
-    @* We only load the validation add-ons, since jQuery is already in the Layout *@
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-    
-    @* Your custom logic MUST be last *@
-    <script src="~/js/custom-validation.js"></script>
+    <!-- 2. Placeholder for View-specific scripts (like Validation) -->
+    @await RenderSectionAsync("Scripts", required: false)
 }
 </body>
 </html>

@@ -1,4 +1,4 @@
-namespace Group1Flight.Models
+namespace Group1Flight.Models.Utilities
 {
     public class CartWrapper
     {

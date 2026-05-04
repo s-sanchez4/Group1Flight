@@ -1,4 +1,6 @@
-﻿@model Group1Flight.Models.FlightViewModel
+﻿@model FlightViewModel
+@using Group1Flight.Models.ViewModels
+@using Group1Flight.Models.DomainModels  
 @using Microsoft.AspNetCore.Http
 
 @{
@@ -59,7 +61,7 @@
             @if (ViewBag.Flights != null)
             {
                 /* Notice: No '@' before foreach inside an existing @ block */
-                foreach (var flight in (IEnumerable<Group1Flight.Models.Flight>)ViewBag.Flights)
+                foreach (var flight in (IEnumerable<Flight>)ViewBag.Flights)
                 {
                     <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">

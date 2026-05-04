@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Group1Flight.Models.DomainModels; 
 
-namespace Group1Flight.Models
+namespace Group1Flight.Models.ViewModels
 {
     public class FlightViewModel
     {

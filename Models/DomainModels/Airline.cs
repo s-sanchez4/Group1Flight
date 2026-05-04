@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Group1Flight.Models
+namespace Group1Flight.Models.DomainModels
 {
     public class Airline
     {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-namespace Group1Flight.Models
+namespace Group1Flight.Models.Validation
 {
     public class FutureDateAttribute : ValidationAttribute, IClientModelValidator
     {
@@ -29,14 +29,15 @@ namespace Group1Flight.Models
         }
 
         // Client-Side Validation (The IClientModelValidator implementation)
-        public void AddValidation(ClientModelValidationContext context)
-        {
-            // This adds HTML attributes like data-val-futuredate to your <input> tag
-            MergeAttribute(context.Attributes, "data-val", "true");
-            MergeAttribute(context.Attributes, "data-val-futuredate", ErrorMessage);
-            MergeAttribute(context.Attributes, "data-val-futuredate-maxyears", _maxYears.ToString());
-        }
+       public void AddValidation(ClientModelValidationContext context)
+{
+    var attributes = context.Attributes;
+    var key = "data-val-futuredate";
+    // 'ErrorMessage' is a property of the Attribute class
+    var value = ErrorMessage; 
 
+    MergeAttribute(attributes, key, value?.ToString() ?? string.Empty);
+}
         private static void MergeAttribute(IDictionary<string, string> attributes, string key, string value)
         {
             if (!attributes.ContainsKey(key))
